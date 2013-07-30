@@ -11,3 +11,10 @@ It includes the following "modules":
 - xstr - Compact ANSI C-string interface
 - xthread - Basic support for threads and mutexes; probably needs additional work
 - xtime - Simplified interface to high-performance timers
+
+
+
+## Roadmap
+- Doxygen comments
+- Remove bloat / cleanup
+- Bug fixes
