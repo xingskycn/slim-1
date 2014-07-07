@@ -34,12 +34,13 @@ USAGE:
 #endif
 
 #pragma once
+#include "config.h"
 
 // os includes
-#if _WIN32
+#if PLATFORM_WINDOWS
 	#include <windows.h>
 	#include <process.h> // for _beginxthreadex
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	#include <pthread.h>
 	#include <unistd.h>
 	#include <sys/types.h>
@@ -47,10 +48,10 @@ USAGE:
 
 
 // xthread entry function
-#if _WIN32
+#if PLATFORM_WINDOWS
 	typedef unsigned int (__stdcall *xthread_entry)( void * );
 	#define XTHREAD_ENTRY unsigned int __stdcall
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	typedef void * (*xthread_entry)( void * );
 	#define XTHREAD_ENTRY void *
 #endif
@@ -68,10 +69,10 @@ extern "C" {
 typedef struct xthread_s
 {
 	unsigned int state;
-#if _WIN32
+#if PLATFORM_WINDOWS
 	unsigned int id;
 	HANDLE handle;
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	pthread_t handle;
 	pthread_attr_t attribs;
 #endif
@@ -108,9 +109,9 @@ void xthread_sleep( int milliseconds );
 
 typedef struct xmutex_s
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	CRITICAL_SECTION cs;
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	pthread_mutex_t handle;
 	pthread_mutexattr_t attribs;
 #endif

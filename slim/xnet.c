@@ -19,15 +19,17 @@
 // FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // -------------------------------------------------------------
-#include "xnet.h"
 #include <stdlib.h>
 #include <string.h>
 
-#if __linux__ || __ANDROID__
+#include "config.h"
+#include "xnet.h"
+
+#if PLATFORM_LINUX || PLATFORM_ANDROID
 	#include <errno.h>
 #endif
 
-#if __linux__ || __APPLE__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 #define strnicmp strncasecmp
 #define stricmp strcasecmp
 #endif
@@ -389,7 +391,7 @@ void xnet_shutdown( void )
 
 const char * xnet_errno_string( void )
 {
-#if __linux__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_ANDROID
     switch( errno )
     {
         case EACCES: return "EACCES";

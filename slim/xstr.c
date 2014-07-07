@@ -19,10 +19,11 @@
 // FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // -------------------------------------------------------------
-#include "xstr.h"
-
 #include <string.h>
 #include <stdio.h> // for vsprintf
+
+#include "config.h"
+#include "xstr.h"
 
 #define XSTR_BUFFER_SIZE 8192
 #define XSTR_MAX_BUFFERS 2
@@ -154,7 +155,7 @@ int xstr_nicmp( const char * s1, const char * s2, size_t count )
 
 		count = s1_len;
 	}
-#if __linux__ || __APPLE__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
     return strncasecmp( s1, s2, count );
 #else
     return strnicmp( s1, s2, count );

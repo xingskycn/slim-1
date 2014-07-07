@@ -19,18 +19,19 @@
 // FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // -------------------------------------------------------------
+#include "config.h"
 #include "xlib.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-#if __linux__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_ANDROID
 	#include <errno.h>
 #endif
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 	#include <windows.h>
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	#include <dlfcn.h>
 #else
 	#error Unknown platform!
@@ -44,7 +45,7 @@ extern "C" {
 
 int xlib_open( xlib_t * lib, const char * library_path )
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	// cache and set a new error mode
 	unsigned int previous_error_mode = SetErrorMode( SEM_FAILCRITICALERRORS );
 #endif
@@ -58,19 +59,19 @@ int xlib_open( xlib_t * lib, const char * library_path )
 
 #endif
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 	// try to open the library
 	lib->handle = LoadLibraryA( library_path );
 
 	// restore error mode
 	SetErrorMode( previous_error_mode );
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	lib->handle = dlopen( library_path, RTLD_LAZY );
 #endif
 
 	if ( lib->handle == 0 )
 	{
-#if _WIN32
+#if PLATFORM_WINDOWS
 		printf( "Unable to open library: %i\n", GetLastError() );
 #endif
 		return 0;
@@ -83,10 +84,10 @@ void xlib_close( xlib_t * lib )
 {
 	if ( lib->handle )
 	{
-#if _WIN32
+#if PLATFORM_WINDOWS
 		FreeLibrary( lib->handle );
 		lib->handle = 0;
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 		dlclose( lib->handle );
 #endif
 	}
@@ -102,9 +103,9 @@ void * xlib_find_symbol( xlib_t * lib, const char * procname )
 	}
 #endif
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 	return GetProcAddress( (HMODULE)lib->handle, (LPSTR)procname );
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	return dlsym( lib->handle, procname );
 #endif
 } // xlib_find_symbol

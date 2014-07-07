@@ -19,11 +19,12 @@
 // FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // -------------------------------------------------------------
+#include "config.h"
 #include "xthread.h"
 
 #define PARANOID 1
 
-#if __linux__ || __APPLE__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	#include <signal.h> // for pthread_kill
 #endif
 
@@ -36,11 +37,11 @@ void xthread_start( xthread_t * t, xthread_entry entry, void * data )
 	if ( !t || !entry )
 		return;
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 	t->handle = CreateThread( 0, 0, entry, data, 0, 0 );
 	//t->handle = (HANDLE)_beginxthreadex( 0, 0, entry, data, 0, &t->id );
 	t->state = XTHREAD_STATE_ACTIVE;
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	{
 		int err;
 
@@ -67,7 +68,7 @@ void xthread_stop( xthread_t * t )
 	if ( !t )
 		return;
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 	if ( WaitForSingleObject( t->handle, 1000 ) != WAIT_OBJECT_0 )
 	{
 		// Thread timed out!
@@ -76,8 +77,8 @@ void xthread_stop( xthread_t * t )
 	CloseHandle( (HANDLE)t->handle );
 	t->handle = 0;
 	t->state = XTHREAD_STATE_STOPPED;
-#elif __linux__ || __APPLE__ || __ANDROID__
-#if !__ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
+#if !PLATFORM_ANDROID
 	pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, 0 );
 	pthread_cancel( (pthread_t)&t->handle );
 #else
@@ -94,7 +95,7 @@ unsigned int xthread_status( xthread_t * t )
 	{
 		return XTHREAD_STATE_INVALID;
 	}
-#if _WIN32
+#if PLATFORM_WINDOWS
 	{
 		unsigned int code;
 		if ( GetExitCodeThread( t->handle, (LPDWORD)&code ) )
@@ -110,7 +111,7 @@ unsigned int xthread_status( xthread_t * t )
 		}
 	}
 
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	if ( pthread_kill( t->handle, 0 ) == 0 )
 	{
 		// xthread is still active
@@ -136,9 +137,9 @@ unsigned int xthread_id( xthread_t * t )
 
 int xthread_selfid()
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	return GetCurrentThreadId();
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	return pthread_self();
 #endif
 } // xthread_selfid
@@ -158,7 +159,7 @@ int xthread_join( xthread_t * t, int timeout_milliseconds )
 		return 0;
 	}
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 
 	if ( timeout_milliseconds == -1 )
 		timeout_milliseconds = INFINITE;
@@ -187,7 +188,7 @@ int xthread_join( xthread_t * t, int timeout_milliseconds )
 	{
 		return 0;
 	}
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	ret = pthread_join( t->handle, 0 );
 
 	if ( ret == 0 )
@@ -205,9 +206,9 @@ int xthread_join( xthread_t * t, int timeout_milliseconds )
 
 void xthread_sleep( int milliseconds )
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	Sleep( milliseconds );
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	// convert milliseconds to microseconds
 	usleep( milliseconds * 1000 );
 #endif
@@ -229,9 +230,9 @@ void xmutex_create( xmutex_t * m )
 		return;
 #endif
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 	InitializeCriticalSection( &m->cs );
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	pthread_mutexattr_init( &m->attribs );
 	pthread_mutex_init( &m->handle, &m->attribs );
 #endif
@@ -239,9 +240,9 @@ void xmutex_create( xmutex_t * m )
 
 void xmutex_destroy( xmutex_t * m )
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	DeleteCriticalSection( &m->cs );
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	pthread_mutex_destroy( &m->handle );
 	pthread_mutexattr_destroy( &m->attribs );
 #endif
@@ -254,12 +255,12 @@ void xmutex_lock( xmutex_t * m )
 		return;
 #endif
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 	if ( m->cs.DebugInfo != 0 )
 	{
 		EnterCriticalSection( &m->cs );
 	}
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	pthread_mutex_lock( &m->handle );
 #endif
 } // xmutex_lock
@@ -271,9 +272,9 @@ void xmutex_unlock( xmutex_t * m )
 		return;
 #endif
 
-#if _WIN32
+#if PLATFORM_WINDOWS
 	LeaveCriticalSection( &m->cs );
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	pthread_mutex_unlock( &m->handle );
 #endif
 } // xmutex_unlock

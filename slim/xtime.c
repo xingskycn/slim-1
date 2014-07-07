@@ -36,9 +36,9 @@ void xtime_startup( xtime_t * t )
 	}
 #endif
 
-#if __linux__ || __APPLE__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	gettimeofday(&t->initialtime, 0);
-#elif _WIN32
+#elif PLATFORM_WINDOWS
 
 	// get timer freq
 	QueryPerformanceFrequency( &t->frequency );
@@ -59,11 +59,11 @@ double xtime_msec( xtime_t * t )
 	}
 #endif
 
-#if __linux__ || __APPLE__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
     struct timeval now;
     gettimeofday(&now, 0);
     return ((now.tv_sec-t->initialtime.tv_sec)*1000.0f + (now.tv_usec-t->initialtime.tv_usec)/1000.0f);
-#elif _WIN32
+#elif PLATFORM_WINDOWS
 	LARGE_INTEGER now;
 	QueryPerformanceCounter( &now );
 
@@ -74,7 +74,7 @@ double xtime_msec( xtime_t * t )
 /* fetch the current time of day */
 void xtime_now( xdatetime_t * dt )
 {
-#if _WIN32
+#if PLATFORM_WINDOWS
 	SYSTEMTIME st;
 
 	GetLocalTime( &st );
@@ -88,7 +88,7 @@ void xtime_now( xdatetime_t * dt )
 	dt->second = st.wSecond;
 	dt->year = st.wYear;
 
-#elif __linux__ || __APPLE__ || __ANDROID__
+#elif PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	// this code from cplusplus.com
 	struct tm * timeinfo;
 	time_t rawtime;

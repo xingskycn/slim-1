@@ -30,10 +30,10 @@ USAGE:
 
 #pragma once
 
-#if __linux__ || __APPLE__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	#include <sys/time.h>
 	#include <time.h>
-#elif _WIN32
+#elif PLATFORM_WINDOWS
 	#include <time.h>
 	#define WIN32_LEAN_AND_MEAN 1
     #include <windows.h>
@@ -46,9 +46,9 @@ extern "C" {
 
 typedef struct
 {
-#if __linux__ || __APPLE__ || __ANDROID__
+#if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	struct timeval initialtime;
-#elif _WIN32
+#elif PLATFORM_WINDOWS
 	LARGE_INTEGER frequency;
 	LARGE_INTEGER last;
 #endif
