@@ -26,6 +26,9 @@
 
 #if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	#include <signal.h> // for pthread_kill
+#elif PLATFORM_WINDOWS
+#else
+	#error Not implemented on this platform.
 #endif
 
 #ifdef __cplusplus

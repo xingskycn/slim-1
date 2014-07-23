@@ -30,6 +30,8 @@ USAGE:
 
 #pragma once
 
+#include "config.h"
+
 #if PLATFORM_LINUX || PLATFORM_APPLE || PLATFORM_ANDROID
 	#include <sys/time.h>
 	#include <time.h>

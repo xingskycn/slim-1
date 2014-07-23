@@ -68,6 +68,8 @@ double xtime_msec( xtime_t * t )
 	QueryPerformanceCounter( &now );
 
 	return ((now.QuadPart - t->last.QuadPart) / (double)t->frequency.QuadPart) * 1000.0;
+#else
+	#error Not implemented on this platform.
 #endif
 }
 

@@ -34,7 +34,9 @@ USAGE:
 
 #pragma once
 
-#ifdef WIN32
+#include "config.h"
+
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(disable: 4996)
 	#pragma warning(disable: 4018)
 	#ifndef WIN32_LEAN_AND_MEAN
@@ -44,7 +46,7 @@ USAGE:
 	#include <windows.h>
 	#include <Ws2tcpip.h>
 	#pragma comment( lib, "ws2_32.lib" )
-#else // posix
+#elif PLATFORM_APPLE || PLATFORM_LINUX || PLATFORM_ANDROID // posix
 	#include <errno.h>
 	#include <sys/socket.h>
 	#include <netinet/in.h>
